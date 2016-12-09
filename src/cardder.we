@@ -1,0 +1,190 @@
+ <template>
+    <div class="cardder" id="cardder" style="transform-origin:{{transformOrigin}};
+    height:{{cardderHeight}};" username="{{username}}">
+      <div class="card"  repeat="cards" onclick="switchCard" ref="{{index}}" >
+         <div class="head" style="background-color:{{bgColor}};border-color:{{bgColor}}">
+         <image src="{{imageUrl}}" class="cardImage" onclick="moveTo"></image>
+         <div class="text">
+         <text style="font-size:40; font-weight:bold ;color:#Eee;text-align:center;">
+         {{title}}
+         </text></div></div>
+         <div class="info" id ="{{id}}" >
+         <input value={{content}} class="cardInput" onchange="onChangeInfo"
+         ref="{{index}}"></input>
+         <div class="confir" onclick="onConfirm" ref="{{index}}">
+         <image class="icon" src="http://bpic.588ku.com/element_origin_min_pic/01/40/02/06573ce3d82df64.jpg"></image>
+         <text style="padding:10;color:black;">确认修改</text>
+         </div>
+         </div>
+      </div>
+    </div>
+ </template>
+ <style>
+.cardder{
+   position:relative;
+   z-index:10;
+
+ }
+ .card{
+   position:relative;
+   overflow:hidden;
+   flex:1;
+
+ }
+ .head{
+
+   height:120;
+   border-width:20;
+   border-radius:15px;
+   flex-direction: row;
+   justify-content:center;
+
+ }
+ .cardImage{
+  height:80;
+  width:80;
+
+ }
+ .text{
+ padding:20;
+   text-align:center;
+   color:#F2FFFF;
+   width:630;
+
+ }
+ .info{
+ margin-top:10;
+ height:80;
+ flex-direction: row;
+ justify-content:flex-end;
+ overflow:hidden;
+ opacity:0;
+ }
+ .cardInput{
+  flex:3;
+  margin-left:50;
+ }
+.confir{
+ flex-direction: row;
+ justify-content:flex-start;
+ flex:1;
+ margin-left:10;
+}
+.icon{
+ height:50;
+ width:50;
+
+}
+ </style>
+ <script>
+ let animation = require('@weex-module/animation');
+ require('weex-components');
+
+ module.exports = {
+   data:{
+   cards:[],
+   selected:0,//默认选中的tab
+   cardderHeight:"400",
+   transformOrigin:"center center",
+   	controlAnim:0,//控制动画
+    username:'',
+    userTel:'',
+    userPWD:'',
+    f:0,
+   },
+   created(){
+
+
+
+   },
+   methods:{
+     animate(el,opat){
+        animation.transition(el, {
+                       styles: {
+                         color: '#FF0000',
+                       // height:height,
+                        transform: 'translate(1, 1)',
+                         transformOrigin: 'center center',
+                         opacity:opat
+                       },
+                       duration: 600, //ms
+                       timingFunction: 'ease-in-out',
+                       delay: 100 //ms
+                     }, function () {
+                       nativeLog('animation finished.')
+                     })
+
+
+     },
+     switchCard(event){
+        var  currIndex = event.target.attr.ref;
+        var vm = this;
+        this.cards.forEach(function(item){
+                 var id = item.id;
+                 var ele = vm.$el(id);
+           if(currIndex === item.index){
+               vm.animate(ele,1);
+           }else{
+               vm.animate(ele,0);
+           }
+     });
+
+     },
+     onChangeInfo:function(e){
+       var info = e.target.attr.value;
+       let index = e.target.attr.ref;
+        switch(index){
+         case 0:
+            this.userTel = info;
+            break;
+         case 1:
+             this.userAddress = info;
+             break;
+         case 2:
+              this.userPWD = info;
+             break;
+               }
+     },
+
+     onConfirm:function(e){
+          let index = e.target.attr.ref ;
+          this.handlerInfo();
+
+     },
+
+     handlerInfo:function(){
+     var vm =this;
+
+       require('../other/api').updateUserInfo(this.username,
+                    this.userTel,this.userPWD);
+
+
+     },
+
+     moveTo:function(){
+        var ele =this.$el('cardder');
+
+       if(this.f ==0){
+       require('../other/middleWare').moveTo(ele,-400);
+         this.f = 1;
+
+       }else{
+         require('../other/middleWare').moveTo(ele,1);
+        this.f = 0;
+
+       }
+
+  }
+
+            }
+   }
+
+
+
+
+
+
+
+
+ </script>
+

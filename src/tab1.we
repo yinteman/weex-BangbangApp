@@ -1,0 +1,282 @@
+ <template>
+ <scroller style="background-color:#FDFAE7">
+     <slider class="slider">
+       <div class="slider-pages" repeat="{{itemList}}">
+         <image class="img" src="{{pictureUrl}}"></image>
+       </div>
+
+       <indicator class="indicator"></indicator>
+     </slider>
+ <div class="function" >
+       <div class="button">
+          <image class="icon"
+          src="{{public}}"
+          onclick="publicOrder"></image>
+          <text class="icon-text">发布任务</text>
+       </div>
+      <div class="button">
+              <image class="icon"
+              src="{{takePublic}}"
+               onclick={{getOrderList}} ></image>
+              <text class="icon-text" >接收任务</text>
+           </div>
+
+ </div>
+ /*最新信息发布*/
+ <div class="banner">
+    <image class="banner-img"
+    src="{{banner_new}}"></image>
+
+    </div>
+  <list class="list" loadmoreoffset=2000>
+         <cell class="cell" onclick="oncellclick" rownumber={{id}} repeat="{{newsLists}}"  append="tree"
+               composite={{composite}}>
+             <div class="newslist">
+                 <div class="userInfo" style="flex-direction:row;">
+                     <div style="flex:2;flex-direction:row;">
+                         <div>
+                             <image class="personPhoto" src="{{PersonPhoto}}"></image>
+                         </div>
+                         <div style="margin-left:20;">
+                             <div style="margin-top:5;">
+                                 <text style="font-size:30;">{{PersonName}}</text>
+                             </div>
+                             <div style="margin-top:5;flex-direction:row;">
+                                 <text style="font-size:25;">截至时间：</text>
+                                 <text style="font-size:25;color:#000;">{{deadLine}}</text>
+                             </div>
+                              <div style="margin:5;flex-direction:row">
+                                 <text style="font-size:25;color:#000;margin-right:15">快递公司:</text>
+                                 <text style="font-size:25;color:#0000;">{{company}}</text>
+                               </div>
+                               <div style="margin:5;flex-direction:row">
+                                    <text style="font-size:25;color:#9E0031;margin-right:15">悬赏金额:</text>
+                                    <text style="font-size:25;color:#9E0031;">{{pay}}</text>
+                               </div>
+                         </div>
+
+                     </div>
+
+
+                 </div>
+
+
+
+
+             </div>
+         </cell>
+
+     </list>
+
+     /*最新信息发布完*/
+
+ /*底部工具栏*/
+
+ </scroller>
+
+ </template>
+ <style>
+ .img {width: 700; height: 500;}
+ .slider {
+     flex-direction: row;
+     margin-left: 20;
+     width: 720;
+     height: 300;
+   }
+ .slider-pages {
+     flex-direction: row;
+     width: 714;
+     height: 300;
+   }
+ .indicator {
+     width:714;
+     height:300;
+     position:absolute;
+     top:100;
+     left:1;
+     item-color: rgba(0,0,0,0.8);
+     item-selectedColor: gray;
+     item-size: 12;
+   }
+
+ .function{
+ flex-direction: row;
+   background-color:#FDFAE7;
+ justify-content:center;
+ margin-top:5;
+ }
+ .button{
+ flex-direction: column;
+ justify-content:center;
+ margin-left:20px;
+
+ }
+ .icon{
+ width:300;
+ height:200;
+ border-radius:50px;
+ margin-left:20;
+ margin-bottom:5;
+
+ }
+ .icon-text{
+ color:black;
+ font-size:26;
+ text-align:center;
+ }
+
+ .list {
+     flex-direction: column;
+     overflow: hidden;
+     width: 750;
+     background-color:#fff;
+     height: 800;
+
+   }
+
+  .cell {
+
+     flex-direction: column;
+     width: 750;
+     height:200;
+     border-color:rgba(3,3,3,0.5);
+     border-bottom-width:3px;
+     border-style:solid;
+     padding-top:10px;
+
+   }
+ .shopHeader {
+     flex-direction: row;
+     width: 720;
+   }
+ .banner{
+  background-color:#eee;
+  height:100px;
+    flex-direction: row;
+    margin-top:10px;
+
+  }
+ .banner-img{
+    margin-top:-50;
+     width:400;;
+     height:200;
+
+ }
+ .banner-text{
+   padding-top:50px;
+   padding-left:40px;
+   color:black;
+   font-width:2px;
+   font-size:30px;
+   margin:5px;
+   text-align:center;
+
+ }
+.personPhoto{
+  width:120;
+  height:120;
+  border-radius:150;
+}
+ </style>
+ <script>
+ require('weex-components');
+ var navigator = require('@weex-module/navigator');
+
+ var url =require('url');
+ var path = require('path');
+
+ module.exports = {
+     data: {
+     refresh_display : 'hide',
+     loading_display : 'hide',
+     backgroundColor: 'red',
+     composite: 'false',
+     banner_new:'',
+      lists:[],
+
+       itemList: [
+         {itemId: '520421163634', title: 'item1', pictureUrl: 'http://img.hb.aicdn.com/52808a9c6d704eaeab026205cd8c97e4d2a98195226af-x9B14I_fw658'},
+         {itemId: '522076777462', title: 'item2', pictureUrl: 'http://img.hb.aicdn.com/ab4fc200edf6ee0d011ed5fca2e06599c0d5027e440970-PePlh4_fw658'},
+         {itemId: '522076777462', title: 'iten3', pictureUrl: 'http://img.hb.aicdn.com/8d153bb2cbfd1f2c110df1bbf7d54e94c406a378133e2-IIK1tX_fw658'}
+       ],
+        newsLists: [],
+     },
+      methods:{
+            oncellclick: function(e) {
+
+                    },
+            publicOrder:function(e){
+                var params={
+                      'url': this.baseUrl+'public.js',
+                  'animated' : 'true',
+                                           }
+                  navigator.push(params,function(e){});
+            },
+            getOrderList:function(e){
+               var params={
+                 'url': this.baseUrl+'good.js',
+                  'animated' : 'true',
+                            }
+                   navigator.push(params,function(e){});
+
+            },
+            tabbarState(event){
+            			this.$dispatch("State",{
+            				state:event.direction==="up"?"hide":"show"
+            			});
+            		},
+
+     },
+     ready: function (e) {
+             var vm = this;
+             vm.$on('tabBar.onClick',function(e){
+               var index= e.detail.index;
+
+               console.log( this.tabConfig[index])
+               var params={
+               'url':'http://'+ path.join('localhost',this.tabConfig[index]),
+               'animated' : 'true'
+               }
+               navigator.push(params,function(e){});
+             });
+
+              vm.lists.push({show:'a'});
+              vm.lists.push({show:'b'});
+
+      },
+    created:function(e){
+       var bundleUrl= this.$getConfig().bundleUrl;
+       var getIp = require('../other/middleWare')
+        this.baseUrl = getIp.getBaseUrl(bundleUrl);
+       this.banner_new = getIp.getBaseImgUrl(bundleUrl)+'/banner_new.png';
+       this.public = getIp.getBaseImgUrl(bundleUrl)+'/public.png';
+       this.takePublic =getIp.getBaseImgUrl(bundleUrl)+'/getOrder.png';
+
+     //获取快递最新信息
+     var vm = this;
+     require('../other/api').getGoodList(4,function(data){
+        console.log(data)
+       if(data instanceof Array){
+         data.forEach(function(item,index){
+          let good={
+             id : index,
+             PersonPhoto: 'https://gw.alicdn.com/tps/i3/TB1yeWeIFXXXXX5XFXXuAZJYXXX-210-210.png_60x60.jpg',
+             PersonName:item.MissionRecerName,
+             deadLine:item.MissionDeadline,
+             company:item.MissionCop,
+             pay:item.giveScore
+           };
+         vm.newsLists.push(good);
+       })
+         }
+     })
+
+
+
+    }
+
+
+
+ }
+
+ </script>

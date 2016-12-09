@@ -1,0 +1,100 @@
+<template>
+     <div style="background-color:#4D4E63;height:950;margin-top:88;">
+      <a href="{{myPublic}}" class="publicStyle" >
+         <image class="icon" src="{{publicIcon}}" ></image>
+         <text class="fontStyle">
+             发布的订单
+         </text>
+      </a>
+        <a href="{{myTake}}" class="take">
+           <image class="icon" src="{{takeIcon}}" ></image>
+            <text class="fontStyle">
+             接收的订单
+             </text>
+        </a>
+    <div>
+
+</template>
+<style>
+.wrapper{
+
+justify-content:center;
+
+}
+.publicStyle{
+  margin-left:50;
+    flex:1;
+  background-color:#F7C154;
+  border-top-color:#F7C154;
+  border-top-width:3;
+  border-radius:50;
+ justify-content:center;
+  width:650;
+}
+.fontStyle{
+text-align:center;
+  color:#fff;
+  font-size:50;
+  font-width:bold;
+  padding-top:20;
+
+}
+.icon{
+  width:250;
+  height:250;
+  margin-left:190;
+}
+.take{
+    margin-left:50;
+     justify-content:center;
+     position:relative;
+     flex:1;
+     width:650;
+     border-top-color:#FF9A6E;
+     border-top-width:3;
+    background-color:#FF9A6E;
+   border-radius:50;
+
+}
+
+</style>
+<script>
+var getIp = require('../other/middleWare');
+  require('weex-components');
+  module.exports = {
+    data: {
+      myPublic:'',
+      myTake:'',
+      baseUrl:'',
+      publicIcon:'',
+      takeIcon:'',
+
+    },
+    created:function(){
+        //获取BaseURL
+             var bundleUrl= this.$getConfig().bundleUrl;
+            this.baseUrl = getIp.getBaseUrl(bundleUrl);
+
+             this.myPublic =this.baseUrl+'mypublic.js';
+             this.myTake =this.baseUrl+'mytake.js';
+
+              this.publicIcon = getIp.getBaseImgUrl(bundleUrl)+'mypublic.png';
+              this.takeIcon = getIp.getBaseImgUrl(bundleUrl)+'mytake.png';
+
+
+    },
+    ready:function(){
+     this.ctHeight = this.$getConfig().env.deviceHeight;
+
+    }
+
+  }
+</script>
+
+
+
+
+
+
+
+

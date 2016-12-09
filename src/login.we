@@ -1,0 +1,211 @@
+<template >
+
+    <scroller >
+    <wxc-navpage title="登录"  type="primary" style="text-align:center;"title-color="white">
+     </wxc-navpage>
+    <div style="margin-left: 120px;margin-top:100px">
+    <div style="flex-direction: row;margin-top:40">
+ <image style="width:55;height:55;margin-right:20" src="{{userImg}}" ></image>
+      <input
+        type="text"
+        placeholder="用户名"
+        class="input"
+        autofocus="true"
+        value={{username}}
+        onchange={{onchangeusername}}      
+      />
+      </div>      
+<div style="flex-direction: row;margin-top:100">
+<image style="width:55;height:55;margin-right:20" src="{{mima}}" ></image>
+      <input
+        type="password"
+        placeholder="密码"
+        class="input"       
+        value={{password}}
+        onchange={{onchangepassword}}    
+      />
+      </div>
+      </div>
+
+      <div style="flex-direction: row; margin-top: 100px;margin-left: 180px;">
+              <wxc-button type="primary" size="middle" value="登录" onclick="loginClick" style="margin-left:5px;width:210px;"></wxc-button>
+              <wxc-button type="success" size="middle" value="注册" onclick="register" style="margin-left:5px;width:210px;"></wxc-button>
+            </div>
+            <div style="margin-left: 50px;">
+            	<image style="width:600;height:500;margin-left:30" src="{{logo}}" ></image>
+            </div>
+
+   
+  </scroller>
+
+</template>
+
+<style>
+  .input {
+    font-size: 60px;
+    height: 80px;
+    width: 400px;
+    font-size:35px;
+    border-bottom-width:3px;
+    border-bottom-style:solid;
+    border-buttom-color:black;
+  }
+ .login{
+  opacity: 1;
+  border-top: 2px solid #D8312A;
+  background-color: #35394a;
+
+
+}
+
+
+.login_title{
+  text-align: left;
+  font-size: 18px;
+  flex:1;
+}
+.login_fields {
+   width:600px;
+   flex:1;
+    opacity:0.5;
+    margin-left:70;
+}
+
+.icon{
+  display:block;
+  flex:1;
+  background-color: #32364a;
+
+
+
+
+}
+.inputPassword{
+    color: #afb1be;
+    margin-top: -2px;
+    background-color:#32364a;
+    flex:2;
+    border-color:#393d52;
+    border-top-width:2;
+    border-bottom-width:2;
+    font-size:18px;
+
+}
+.inputText{
+  color: #afb1be;
+  margin-top: -2px;
+  background-color: #32364a;
+  border-color:#393d52;
+  border-top-style:solid;
+  border-bottom-style:solid;
+  border-top-width: 2;
+  border-bottom-width: 2;
+   font-size:18px;
+   flex:2
+
+}
+.login_fields__user {
+  flex:1;
+
+ }
+.login_fields__password{
+
+  flex:1;
+
+ }
+
+.login_fields__submit {
+  flex:2;
+  justify-content:center;
+  width:600px;
+}
+.forgot {
+  font-size: 18px;
+  text-decoration: underline;
+  color: #606479;
+  margin-top:20;
+  margin-left:30;
+
+
+}
+
+.submitInput {
+  background-color: transparent;
+  font-size: 16px;
+    border-color: #DC6180;
+    border-style:solid;
+    border-width:2px;
+    border-radius: 50px;
+
+}
+
+
+</style>
+
+<script>
+var getIp = require('../other/middleWare')
+
+  require('weex-components');
+  var api = require('../other/api');
+  module.exports = {
+    data: {
+      username: '',
+      password: '',
+      baseUrl:'',
+      userImg: '',
+      mima:'',
+       logo:''
+    },
+     created: function() {
+                var bundleUrl= this.$getConfig().bundleUrl;
+                 this.baseUrl= getIp.getBaseUrl(bundleUrl);
+
+     },
+    methods: {
+      loginClick: function() {
+        var vm = this;
+        api.validate(this.username,this.password,function(data){
+        if(data){
+           require('@weex-module/event').openURL(vm.baseUrl + 'home.js', function(err){
+                                   console.log(err);
+                               });
+                               }else{
+                              vm.username = '';
+                              vm.password =''
+
+                               }
+        });
+      },
+      register:function()
+      {
+
+         getIp.goToRegister(this.baseUrl);
+
+      },
+      onchangeusername: function(event) {
+        this.username = event.value;     
+      },
+      onchangepassword: function(event) {
+        this.password = event.value;
+      },
+
+
+
+
+    },
+    created:function(){
+
+     //获取BaseURL
+       var bundleUrl= this.$getConfig().bundleUrl;
+        var getIp = require('../other/middleWare')
+        this.baseUrl = getIp.getBaseUrl(bundleUrl);
+           var vm=this;
+
+          this.userImg = getIp.getBaseImgUrl(bundleUrl)+'/jpg/logouser.png';
+          this.mima = getIp.getBaseImgUrl(bundleUrl)+'/jpg/mima.png';
+          this.logo = getIp.getBaseImgUrl(bundleUrl)+'/jpg/logo.png';
+
+
+    }
+  };
+</script>

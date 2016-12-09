@@ -1,0 +1,180 @@
+ <template >
+    <scroller >
+  
+
+     <wxc-navpage title="注册" title-color="#eee" type="primary" style="text-align:center;"left-item-src="{{back}}"
+     		left-item-color="white"background-color="#7A706F"></wxc-navpage>
+
+   <div style="margin-top:88;justify-content:center;">
+     <div style="flex-direction: row;margin-top:40;justify-content:center;">
+       <image style="width:200;height:200;border-radius:200px;margin-left:60;" src="http://seopic.699pic.com/photo/00037/9614.jpg_wh1200.jpg" >
+       </image>
+        </div>
+
+ <div style="background-color:#fff;margin-top:50;opacity:0.9;height:600;justify-content:center;flex:5" id="content">
+     <div style="flex-direction: row;margin-left: 120px;">
+         <image style="width:55;height:55;margin-right:20;" src="{{userImg}}" ></image>
+           <input
+         type="text"
+         placeholder="用户名"
+         class="input"
+         autofocus="true"
+         value={{username}}
+         onchange={{onchangeusername}}
+       />
+       </div>
+ <div style="flex-direction: row;margin-top:50;margin-left: 120px;background-color:#fff;">
+ <image style="width:55;height:55;margin-right:20" src="{{mima}}" onclick="move('400',$event)" ></image>
+       <input
+         type="password"
+         placeholder="密码"
+         class="input"
+         value={{password}}
+         onchange={{onchangepassword}}
+       />
+       </div>
+       <div style="flex-direction: row;margin-top:50;margin-left: 120px;background-color:#fff;">
+        <image style="width:55;height:55;margin-right:20" src="{{mima}}" onclick="move('600',$event)"></image>
+              <input
+                type="password"
+                placeholder="确认密码"
+                class="input"
+                value={{confirpwd}}
+                onchange={{confirpassword}}
+              />
+              </div>
+              <div style="flex-direction: row;margin-top:50;margin-left: 120px;background-color:#fff;">
+                      <image style="width:55;height:55;margin-right:20" src="{{tel}}" onclick="move('600',$event)" ></image>
+                            <input
+                              type="telephone"
+                              placeholder="电话号码"
+                              class="input"
+                              value={{telephone}}
+                              onchange={{onchangetelphone}}
+                            />
+                            </div>
+       </div>
+    </div>
+    <!-- 按钮写在这里-->
+  <div class='login_fields__submit'>
+
+         	      <div style="flex:1;"></div>
+         	      <div  class="submitInput"  style="flex:2;">
+         	        <text style="color: #013A33;text-align:center;font-size:35px;padding-top:25;"onclick="signup">注册</text>
+         	      </div>
+<!-- 按钮写在这里-->
+   </scroller>
+
+  </div>
+ </template>
+
+ <style>
+ .input {
+     font-size: 60px;
+     height: 80px;
+     width: 400px;
+     font-size:35px;
+     border-bottom-width:3;
+     border-color:black;
+     border-bottom-style:solid;
+   }
+   .login_fields__submit {
+     margin-top:80;
+     justify-content:center;
+     width:600;
+     height:100;
+     flex-direction:row;
+   }
+   .submitInput {
+     background-color: transparent;
+       border-color: #013A33;
+       border-style:solid;
+       border-width:2px;
+       border-radius: 50px;
+
+
+   }
+ </style>
+<script>
+var getIp = require('../other/middleWare');
+require('weex-components');
+ module.exports = {
+    data: {
+      username: '',
+      password: '',
+      confirpwd:'',
+      telephone:'',
+      back:'',
+      tel:'',
+       userImg: '',
+        mima:'',
+
+    },
+    methods: {
+       signup: function() {
+        var $modal = require('@weex-module/modal');
+        if(this.confirpwd != this.password){
+         $modal.toast({'message': "request failed", duration: 3});
+        }else{
+            var vm =this;
+        require('../other/api').register( this.username,this.password,this.telephone,function(data){
+             if(data){
+               require('@weex-module/event').openURL(vm.baseUrl + 'home.js', function(err){
+                                                  console.log(err);
+                     });
+                     }else{
+                       vm.password='';
+                       vm.confirpwd = '';
+
+
+
+                     }
+        })
+
+      }
+      },
+      onchangeusername: function(event) {
+
+        this.username = event.value;
+      },
+      onchangepassword: function(event) {
+        this.password = event.value;
+      },
+      confirpassword: function(event) {
+             this.confirpwd = event.value;
+            },
+      onchangetelphone:function(e){
+       this.telephone = e.value;
+
+      },
+       move:function(arg1,e){
+            var ele =this.$el('content');
+              if(this.click == 0){
+                 getIp.moveTo(ele,-arg1);
+                 this.click = 1;
+               }else{
+                   getIp.moveTo(ele,0);
+                  this.click = 0;
+               }
+
+            },
+    },
+    created: function() {
+       //获取BaseURL
+                var bundleUrl= this.$getConfig().bundleUrl;
+                  var getIp = require('../other/middleWare')
+                   this.baseUrl = getIp.getBaseUrl(bundleUrl);
+             var vm=this;
+    	this.$on('naviBar.leftItem.click',function(e){
+              getIp.loginOut(vm.baseUrl);
+           });
+      this.back=getIp.getBaseImgUrl(bundleUrl)+'/back.png';
+      this.tel = getIp.getBaseImgUrl(bundleUrl)+'/tel.png';
+      this.userImg = getIp.getBaseImgUrl(bundleUrl)+'/jpg/logouser.png';
+      this.mima = getIp.getBaseImgUrl(bundleUrl)+'/jpg/mima.png';
+    }
+  };
+
+
+
+</script>

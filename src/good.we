@@ -1,0 +1,103 @@
+ <template>
+  <scroller>
+    <wxc-navpage if="showNavPage"
+    class="navpage" data-role="none"
+    height="{{navBarHeight}}"
+     background-color="#5C5893"
+    title="任务列表" title-color="#C4BA76"
+    left-item-title="返回" left-item-color="white"
+     left-item-src="http://oavd4gltg.bkt.clouddn.com/search.png"
+    right-item-src="{{homeImg}}"></wxc-navpage>
+    <!-- 导航结束 -->
+    <!-- 列表开始 -->
+   <view class="view" id="view" views="{{views}}" moreViews = "{{moreGoods}}" top="{{top}}"
+   username="{{username}}" where="{{where}}">
+   </view>
+  </scroller>
+
+ </template>
+ <style>
+.flexRow {
+    flex-direction: row;
+  }
+
+.view {
+    flex-direction: column;
+    justify-content:center;
+     position:relative;
+
+    width: 750;
+
+
+  }
+
+ </style>
+ <script>
+ var api = require('../other/api');
+ var getIp = require('../other/middleWare')
+ require('weex-components')
+  module.exports ={
+   data:{
+   showNavPage:true,//默认显示导航页
+   loading_display :false,
+   navBarHeight:"100",//nav高度
+   views:[],
+   moreGoods:[],
+   where:'normal',
+   top:100,
+   username:'',
+   homeImg:'',
+  },
+
+    created:function(){
+       //获取BaseURL
+                   var bundleUrl= this.$getConfig().bundleUrl;
+                      this.baseUrl = getIp.getBaseUrl(bundleUrl);
+                      var vm =this;
+           this.homeImg = getIp.getBaseImgUrl(bundleUrl) + 'home.png';
+           //设置导航选项
+           this.$on('naviBar.leftItem.click',function(e){
+           console.log('time');
+       			getIp.goToSearch(vm.baseUrl);
+       		});
+       		this.$on('naviBar.rightItem.click',function(e){
+                  getIp.backToHome(vm.baseUrl);
+       		});
+
+       		// 根据屏幕高度调整顶部导航栏高度
+
+       		this.$getConfig((config)=>{
+       			let env = config.env;
+       			if(env.platform == 'iOS'){
+       				let scale = env.scale;
+       				let deviceWidth = env.deviceWidth / scale;
+       				vm.navBarHeight = 100.0 * 750.0 / deviceWidth;
+       			}
+       		});
+
+       		//获取所有订单信息
+       api.getGoodList(15,function(data){
+
+         if(data instanceof Array){
+              var res = getIp.makeGoodList(data);
+              vm.views = res.goodLists;
+               vm.moreGoods = res.moreGoods;
+
+
+         }
+
+       });
+
+       require('@weex-module/storage').getItem('username',function(e){
+                vm.username = e.data;
+         })
+
+
+       }
+
+
+
+
+
+  }
+ </script>

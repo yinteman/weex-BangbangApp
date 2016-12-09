@@ -1,0 +1,104 @@
+ <template>
+ 	<scroller class="wrapper" style="height={{ctHeight}}">
+       <div class="header">
+          <image src="http://seopic.699pic.com/photo/00037/9614.jpg_wh1200.jpg"
+           class="userImg"></image>
+          <div id="{{userId}}" class="userName">
+            <text
+            style="color:#FAFFFE;font-size:55;font-weight:bold;text-align:center"
+            value="{{username}}"></text>
+            <text
+             style="color:#FAFFFE;font-size:30;font-weight:bold;text-align:center"
+             value="{{score}}"></text>
+            </div>
+       </div>
+       <cardder  cards="{{cards}}" id="cardder"  class="cardder" username="{{username}}" onclick="move">
+       </cardder>
+ 	</scroller>
+ </template>
+
+ <style>
+.wrapper{
+position:relative;
+}
+.header{
+height:600;
+background-color:#7A706F;
+justify-content:center;
+}
+.userImg{
+width:300;
+height:300;
+border-color:#CAC2C0;
+border-width:12px;
+border-radius:200;
+margin-left:220;
+}
+.userName{
+height:100;
+text-align:center;
+margin-top:40;
+}
+
+.cardder{
+
+  height:280;
+}
+ </style>
+
+ <script>
+ 	module.exports = {
+ 		data: {
+ 			cards:[
+
+ 			 {
+              index: 0,
+              title: '电话',
+              content:'',
+              bgColor:'#E58380',
+             imageUrl:'http://oavd4gltg.bkt.clouddn.com/search.png',
+             id:'tel'
+             },
+
+             {
+                 index: 1,
+                 title: '密码',
+                 bgColor:'#E4A280',
+                 content:'****',
+             imageUrl: 'http://oavd4gltg.bkt.clouddn.com/search.png',
+             id:'pwd',
+             },
+
+ 			],
+ 			username:'',
+ 			score:'积分：'
+ 		},
+ 		created: function() {
+ 			// 监听子组件cardder发送过来的消息
+            this.$on("switchCard",(e)=>{
+                this.card = e.detail.index;
+            		});
+
+              //初始化
+                var vm = this;
+                    var storage = require('@weex-module/storage');
+                     storage.getItem('username', function(e) {
+                       if(e.result == 'success'){
+                           vm.username = e.data;
+                    require('../other/api').getUserInfo(e.data,function(data){
+
+                             vm.cards[0].content = data.phoneNumber;
+                             vm.score  += data.score;
+                           });
+                            }
+                });
+
+
+
+ 		},
+     ready:function(){
+           this.ctHeight = this.$getConfig().env.deviceHeight;
+     },
+
+ 	}
+ </script>

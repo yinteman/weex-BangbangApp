@@ -1,0 +1,232 @@
+   <template>
+    <scroller>
+      <wxc-navpage if="showNavPage"
+      class="navpage" data-role="none"
+      height="{{navBarHeight}}"
+       background-color="#5C5893"
+      title="接收的订单" title-color="#C4BA76"
+       right-item-src="{{homeImg}}"></wxc-navpage>
+      <!-- 导航结束 -->
+      <div class="toolbar">
+              <div class="search">
+                <div class="searchItem"  >
+                   <div class="head" >
+                        <text class="title" >单号</text>
+                  </div>
+                  <input value={{Sorder}} class="searchInput" onchange="onChangeInfo" ref="order"
+                   ></input>
+                </div>
+               <div class="searchItem"  >
+                  <div class="head" >
+                       <text class="title" >任务状态</text>
+                   </div>
+                   <input value={{Statues}} class="searchInput" onchange="onChangeInfo" ref="status"
+                    ></input>
+               </div>
+              </div>
+           <div  class="search_1">
+                    <div class="searchItem"  >
+                        <div class="head" >
+                             <text class="title" >快递公司</text>
+                         </div>
+                                <input value={{Scompany}} class="searchInput" onchange="onChangeInfo" ref="company"
+                                ></input>
+                          </div>
+                  <div style="flex-direction: row; margin-left:10; ">
+                      <wxc-button size="middle" value="搜索" onclick="search" class="button"></wxc-button>
+                      <wxc-button  size="middle" value="清空" onclick="clearInput" class="button"
+                             style="margin-left:10;"></wxc-button>
+                        </div>
+              </div>
+           </div>
+      <!-- 列表开始 -->
+     <view class="view" id="view" views="{{views}}" moreViews = "{{moreGoods}}" top="{{top}}"
+     username="{{username}}" where="{{where}}">
+     </view>
+    </scroller>
+
+   </template>
+   <style>
+  .flexRow {
+      flex-direction: row;
+    }
+
+
+   .search{
+     justify-content:center;
+     margin-top:100;
+     flex-direction: row;
+     background-color:rgba(255,255,255,0.5);
+     height:100;
+   }
+ .search_1{
+     background-color:rgba(255,255,255,0.5);
+        justify-content:center;
+        flex-direction: row;
+        margin-top:20;
+        height:100;
+
+ }
+   .searchItem{
+      margin-top:20;
+      margin-left:3;
+      flex-direction: row;
+      justify-content:center;
+      height:100;
+     }
+ .title{
+      font-size:32;
+      text-align:center;
+      color:#000;
+      padding-top:20;
+   }
+ .searchInput{
+   margin-left:10;
+    background-color:#504459;
+   border-bottom-width:1;
+   height:80;
+   color:#fff;
+   border-radius:150;
+   border-color:#504459;
+   text-align:center;
+   font-size:30;
+   width:250;
+     }
+
+  .button{
+  width:150;
+  background-color:rgba(255,255,255,0.5);
+  border-radius:120;
+  border-color:#504459;
+  color:#eee;
+  }
+ .toolbar{
+ position:relative;
+
+
+ }
+   </style>
+   <script>
+   var api = require('../other/api');
+   var getIp = require('../other/middleWare')
+   require('weex-components')
+    module.exports ={
+     data:{
+     showNavPage:true,//默认显示导航页
+     navBarHeight:"88",//nav高度
+     views:[],
+     moreGoods:[],
+     userId:'',
+      Sorder:'',
+     Scompany:'',
+     Statues:'',
+     username:'',
+     top:10,
+      homeImg:'',
+
+
+    },
+
+      created:function(){
+         //获取BaseURL
+                     var bundleUrl= this.$getConfig().bundleUrl;
+                        this.baseUrl = getIp.getBaseUrl(bundleUrl);
+                        var vm =this;
+             this.homeImg = getIp.getBaseImgUrl(bundleUrl) + 'home.png';
+
+             //设置导航选项
+
+         		this.$on('naviBar.rightItem.click',function(e){
+                    getIp.backToHome(vm.baseUrl);
+         		});
+
+         		// 根据屏幕高度调整顶部导航栏高度
+
+         		this.$getConfig((config)=>{
+         			let env = config.env;
+         			if(env.platform == 'iOS'){
+         				let scale = env.scale;
+         				let deviceWidth = env.deviceWidth / scale;
+         				vm.navBarHeight = 100.0 * 750.0 / deviceWidth;
+         			}
+         		});
+
+         		//获取商品列表
+   require('@weex-module/storage').getItem('username',function(e){
+         vm.username = e.data;})
+   require('@weex-module/storage').getItem('userId',function(e){
+         var userId = e.data;
+         console.log(userId);
+         vm.userId =userId;
+         console.log(userId);
+            api.userPublicOrTake( -1,userId,function(data){
+               if(data instanceof Array){
+                         let res = getIp.makeGoodList(data);
+                         vm.goodLists = res.goodLists;
+                           vm.moreGoods = res.moreGoods;
+                          }
+                  })
+                         });
+
+
+
+         },
+         methods:{
+             clearInput:function(){
+                    this.Scompany='';
+                    this.Sorder='';
+                   this.Statues='';
+
+             },
+             onChangeInfo:function(e){
+               var ref = e.target.attr.ref ;
+               switch(ref){
+                case 'company':
+                   this.Scompany = e.target.attr.value;
+                   break;
+                case 'order':
+                   this.Sorder = e.target.attr.value;
+                   break;
+                case 'status':
+                   this.Statues = e.target.attr.value;
+                   break;
+               }
+
+
+             },
+
+              search:function(){
+                          var vm =this;
+                          let  body ='MissionCop='+this.Scompany+'&MissionStatus='+this.Statues+'&MissionCA='+this.Sorder+'&username='+this.username;
+                          console.log(body);
+                          api.getPersonGoodBySearch(body,function(data){
+                                    if(data instanceof Array){
+                                          let res = getIp.makeGoodList(data);
+                                              vm.views = res.goodLists;
+                                              vm.moreGoods = res.moreGoods;
+                                                             }else{
+                                      require('@weex-module/modal').toast({
+                                            'message': '还没有任务',
+                                             'duration':2
+                                             });   }
+
+                                             });
+                                },
+
+
+
+
+
+
+
+
+
+
+         }
+
+
+
+
+
+    }
+   </script>

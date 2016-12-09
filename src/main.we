@@ -1,0 +1,100 @@
+<template>
+  <div class="container" >
+     <image src="{{leader}}" class="leaderImg" style="height:{{LeaderHeight}}">
+     </image>
+     <div class="button" onclick="onEnter">
+       <text class="btn-label">开启</text>
+     </div>
+   </div>
+   </template>
+
+<style>
+.container{
+  background-color:#F2F3F7;
+  justify-content:center;
+}
+.leaderImg{
+
+  position:relative;
+  top:0;
+
+
+}
+.button{
+  border-color:#2A3A39;
+  margin-left:180;
+  margin-top:60;
+  border-width:2;
+  border-radius:15;
+  width:400;
+  height:100;
+
+}
+
+.btn-label{
+  color:#2A3A39;
+  font-size:50;
+  padding-top:20;
+  text-align:center
+
+}
+</style>
+
+<script>
+var timer = require('@weex-module/timer');
+ module.exports = {
+    data: {
+   ctHeight:'',
+   showHome:'',
+   showLogin:'',
+   leader:'',
+   LeaderHeight:'',
+    },
+ ready(){
+      this.ctHeight = this.$getConfig().env.deviceHeight;
+      this.LeaderHeight = this.ctHeight * 0.43;
+    },
+    created:function(){
+
+    //获取BaseURL
+             var bundleUrl= this.$getConfig().bundleUrl;
+               var getIp = require('../other/middleWare')
+                this.baseUrl = getIp.getBaseUrl(bundleUrl);
+    //获取leaderImg
+        this.leader = getIp.getBaseImgUrl(bundleUrl)+'leader.png'
+      },
+      methods:{
+
+        onEnter : function(){
+            var vm =this;
+                  require('@weex-module/storage').getItem('username',function(res){
+                  console.log(res.data);
+                     if(res.data){
+                        let url= vm.baseUrl+'home.js';
+                     setTimeout(  function(){
+                             require('@weex-module/event').openURL(url,
+                                function(err){ console.log(err); });
+                                },300);
+
+                      }else{
+                        let url= vm.baseUrl+'login.js';
+                     setTimeout(function(){
+                         require('@weex-module/event').openURL(url,
+                            function(err){ console.log(err); });
+                           },300);
+
+                     }
+
+
+                  })
+
+        },
+
+
+
+
+
+
+      }
+  }
+</script>
